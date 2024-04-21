@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    ports:
+     - "27017:27107"
+    volumes:
+      - ./backend/data:/data
+  backend:
+    container_name: backend
+    build: ./backend
+    env_file:
+      - ./backend/.env.docker
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    command: ["node","--trace-deprecation","server.js"]
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    env_file:
+      - ./frontend/.env.docker
+    ports:
+      - "5173:5173"
+  redis:
+    container_name: redis
+    image: redis:alpine
+    expose:
+      - 6379
+    depends_on:
+      - mongo
+volumes:
+   data:
